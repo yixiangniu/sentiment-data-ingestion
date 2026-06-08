@@ -23,8 +23,14 @@ reports/
 
 ✅ Data source evaluation
 
-⏳ Database schema design
+✅ Initial data quality assessment
+
+✅ Preliminary cleaning rules
+
+✅ Initial schema design
 
 ⏳ Automated ingestion pipeline
 
-⏳ Cleaning and loading workflow
+⏳ Database implementation
+
+⏳ Automated ETL workflow

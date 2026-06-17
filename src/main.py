@@ -1,3 +1,5 @@
+import argparse
+
 from src.database.connection import initialize_database
 from src.scraper.google_play_reviews import fetch_reviews
 from src.cleaning.review_cleaner import clean_reviews
@@ -8,23 +10,47 @@ from src.database.loader import (
 )
 
 
-APP_ID = "com.spotify.music"
-REVIEW_COUNT = 50
+DEFAULT_APP_ID = "com.spotify.music"
+DEFAULT_REVIEW_COUNT = 50
 
 
-def run_pipeline():
+def parse_args():
+    """
+    Parse command-line arguments for the ingestion pipeline.
+    """
+    parser = argparse.ArgumentParser(
+        description="Run the Google Play review ingestion pipeline."
+    )
+
+    parser.add_argument(
+        "--app-id",
+        default=DEFAULT_APP_ID,
+        help="Google Play app ID to collect reviews for.",
+    )
+
+    parser.add_argument(
+        "--count",
+        type=int,
+        default=DEFAULT_REVIEW_COUNT,
+        help="Number of recent reviews to fetch.",
+    )
+
+    return parser.parse_args()
+
+
+def run_pipeline(app_id: str, review_count: int):
     print("Initializing database...")
     initialize_database()
 
-    run_id = start_ingestion_run(source="Google Play", app_id=APP_ID)
+    run_id = start_ingestion_run(source="Google Play", app_id=app_id)
     print(f"Started ingestion run: {run_id}")
 
     try:
-        print(f"Fetching {REVIEW_COUNT} reviews for app_id={APP_ID}...")
-        raw_reviews = fetch_reviews(APP_ID, REVIEW_COUNT)
+        print(f"Fetching {review_count} reviews for app_id={app_id}...")
+        raw_reviews = fetch_reviews(app_id, review_count)
 
         print("Cleaning reviews...")
-        cleaned_reviews = clean_reviews(raw_reviews, APP_ID)
+        cleaned_reviews = clean_reviews(raw_reviews, app_id)
 
         print("Loading reviews into database...")
         inserted_count = insert_reviews(cleaned_reviews, run_id=run_id)
@@ -57,4 +83,5 @@ def run_pipeline():
 
 
 if __name__ == "__main__":
-    run_pipeline()
+    args = parse_args()
+    run_pipeline(app_id=args.app_id, review_count=args.count)

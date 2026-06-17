@@ -19,18 +19,17 @@ notebooks/
 src/
 reports/
 
-## Current Status
+## Current Pipeline Status
 
-✅ Data source evaluation
+The current implementation provides an initial repeatable ingestion pipeline for Google Play reviews.
 
-✅ Initial data quality assessment
+Pipeline flow:
 
-✅ Preliminary cleaning rules
-
-✅ Initial schema design
-
-⏳ Automated ingestion pipeline
-
-⏳ Database implementation
-
-⏳ Automated ETL workflow
+```text
+Google Play reviews
+→ fetch recent reviews
+→ clean and normalize fields
+→ load into SQLite database
+→ prevent duplicate review inserts
+→ record ingestion run metadata
+```

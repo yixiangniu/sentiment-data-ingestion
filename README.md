@@ -33,3 +33,38 @@ Google Play reviews
 → prevent duplicate review inserts
 → record ingestion run metadata
 ```
+## How to Run
+
+Install dependencies:
+
+```bash
+pip install -r requirements.txt
+```
+
+Run the pipeline with default settings:
+
+```bash
+python -m src.main
+```
+
+Run with custom configuration:
+
+```bash
+python -m src.main --app-id com.spotify.music --count 100
+```
+
+Run the lightweight daily scheduler:
+
+```bash
+python -m src.scheduler.run_daily --app-id com.spotify.music --count 50 --time 09:00
+```
+
+Note: The scheduler is a lightweight local prototype for recurring execution. In a production setting, this could be replaced with cron, Airflow, Prefect, or a cloud scheduler.
+
+Generated local data is stored under:
+
+```text
+data/reviews.db
+```
+
+The `data/` directory is ignored by Git because it contains generated local database files.

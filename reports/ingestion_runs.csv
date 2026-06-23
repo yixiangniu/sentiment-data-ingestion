@@ -1,0 +1,7 @@
+run_id,started_at,ended_at,runtime_seconds,app_id,batch_size_requested,records_fetched,records_inserted,duplicates_skipped,duplicate_rate,throughput_records_per_second,status,error_message
+20260623_185250,2026-06-23T18:52:50,2026-06-23T18:52:50,0.08,com.spotify.music,20,20,0,20,1.0,0.0,failed,clean_reviews() missing 1 required positional argument: 'app_id'
+20260623_190107,2026-06-23T19:01:07,2026-06-23T19:01:07,0.09,com.spotify.music,20,20,0,20,1.0,0.0,success,
+20260623_190232,2026-06-23T19:02:32,2026-06-23T19:02:32,0.07,com.spotify.music,20,20,0,20,1.0,0.0,success,
+20260623_190233,2026-06-23T19:02:33,2026-06-23T19:02:33,0.16,com.spotify.music,50,50,30,20,0.4,183.0463,success,
+20260623_190233,2026-06-23T19:02:33,2026-06-23T19:02:33,0.18,com.spotify.music,100,100,50,50,0.5,280.5033,success,
+20260623_190640_190833,2026-06-23T19:06:40,2026-06-23T19:06:40,0.09,com.spotify.music,20,20,0,20,1.0,0.0,success,

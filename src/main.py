@@ -1,4 +1,6 @@
 import argparse
+from datetime import datetime
+from src.monitoring.run_logger import log_pipeline_run
 
 from src.database.connection import initialize_database
 from src.scraper.google_play_reviews import fetch_reviews
@@ -38,44 +40,59 @@ def parse_args():
     return parser.parse_args()
 
 
-def run_pipeline(app_id: str, review_count: int):
-    print("Initializing database...")
-    initialize_database()
+def run_pipeline(app_id, review_count):
+    run_id = datetime.now().strftime("%Y%m%d_%H%M%S_%f")
+    started_at = datetime.now()
 
-    run_id = start_ingestion_run(source="Google Play", app_id=app_id)
-    print(f"Started ingestion run: {run_id}")
+    records_fetched = 0
+    records_inserted = 0
 
     try:
-        print(f"Fetching {review_count} reviews for app_id={app_id}...")
-        raw_reviews = fetch_reviews(app_id, review_count)
+        initialize_database()
 
-        print("Cleaning reviews...")
-        cleaned_reviews = clean_reviews(raw_reviews, app_id)
+        raw_reviews = fetch_reviews(app_id=app_id, count=review_count)
+        records_fetched = len(raw_reviews)
 
-        print("Loading reviews into database...")
-        inserted_count = insert_reviews(cleaned_reviews, run_id=run_id)
+        cleaned_reviews = clean_reviews(raw_reviews, app_id=app_id)
+        records_cleaned = len(cleaned_reviews)
 
-        finish_ingestion_run(
+        records_inserted = insert_reviews(cleaned_reviews, run_id=run_id)
+
+        ended_at = datetime.now()
+
+        log_pipeline_run(
             run_id=run_id,
+            started_at=started_at,
+            ended_at=ended_at,
+            app_id=app_id,
+            batch_size_requested=review_count,
+            records_fetched=records_fetched,
+            records_inserted=records_inserted,
             status="success",
-            records_fetched=len(raw_reviews),
-            records_inserted=inserted_count,
+            error_message="",
         )
 
         print("Pipeline completed.")
         print(f"Run ID: {run_id}")
-        print(f"Fetched: {len(raw_reviews)}")
-        print(f"Cleaned: {len(cleaned_reviews)}")
-        print(f"Inserted: {inserted_count}")
+        print(f"Fetched: {records_fetched}")
+        print(f"Cleaned: {records_cleaned}")
+        print(f"Inserted: {records_inserted}")
 
     except Exception as error:
-        finish_ingestion_run(
+        ended_at = datetime.now()
+
+        log_pipeline_run(
             run_id=run_id,
+            started_at=started_at,
+            ended_at=ended_at,
+            app_id=app_id,
+            batch_size_requested=review_count,
+            records_fetched=records_fetched,
+            records_inserted=records_inserted,
             status="failed",
-            records_fetched=0,
-            records_inserted=0,
             error_message=str(error),
         )
+
         print("Pipeline failed.")
         print(f"Run ID: {run_id}")
         print(f"Error: {error}")
